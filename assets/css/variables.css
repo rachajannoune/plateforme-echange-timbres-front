@@ -1,0 +1,36 @@
+:root {
+  /* Couleurs principales */
+  --color-yellow: #ffcd00;
+  --color-yellow-deep: #e6b400;
+
+  --color-blue: #1a4fb0;
+  --color-navy: #16296b;
+
+  /* Surfaces */
+  --color-background: #faf9f5;
+  --color-surface: #ffffff;
+
+  /* Textes */
+  --color-text: #16223d;
+  --color-muted: #717a8b;
+
+  /* États */
+  --color-success: #1f8a5b;
+  --color-danger: #b23b3b;
+  --color-teal: #0e7c6f;
+
+  /* Typographies */
+  --font-display: "Archivo", sans-serif;
+  --font-body: "Public Sans", sans-serif;
+  --font-mono: "Spline Sans Mono", monospace;
+
+  /* Rayons */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Ombres */
+  --shadow-card: 0 8px 24px rgba(22, 34, 61, 0.08);
+  --shadow-elevated: 0 14px 36px rgba(22, 34, 61, 0.14);
+}
