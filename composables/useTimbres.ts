@@ -20,6 +20,7 @@ interface ParametresTimbres {
     statut?: StatutTimbre
     ville?: string
 }
+//GET /api/timbres
 
 export function useTimbres(
     parametres: ParametresTimbres = {}
@@ -48,3 +49,26 @@ export function useTimbres(
     }
 }
 
+//GET /api/timbres/:id
+
+export function useTimbre(id: string) {
+    const config = useRuntimeConfig()
+
+    const baseURL = config.public.apiBase
+
+    const {
+        data,
+        status,
+        error,
+        refresh
+    } = useFetch<Timbre>(
+        `${baseURL}/api/timbres/${id}`,
+    )
+
+    return {
+        data,
+        status,
+        error,
+        refresh
+    }
+}
