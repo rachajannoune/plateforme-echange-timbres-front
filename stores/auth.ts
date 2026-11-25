@@ -3,6 +3,7 @@ import type { DonneesConnexion, DonneesInscription, Utilisateur } from '~/types/
 
 export const useAuthStore = defineStore('auth', () => {
     const utilisateur = ref<Utilisateur | null>(null)
+    const authChargee = ref(false)
 
     const estConnecte = computed(() => {
         return Boolean(utilisateur.value)
@@ -18,7 +19,6 @@ export const useAuthStore = defineStore('auth', () => {
         deconnecter: deconnecterApi,
         inscrire: inscrireApi,
     } = useAuth()
-
     async function chargerUtilisateur() {
         try {
             const utilisateurRecupere = await recupererUtilisateur()
@@ -26,6 +26,8 @@ export const useAuthStore = defineStore('auth', () => {
             utilisateur.value = utilisateurRecupere
         } catch {
             utilisateur.value = null
+        } finally {
+            authChargee.value = true
         }
     }
     async function connecter(donnees: DonneesConnexion) {
@@ -50,6 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
         chargerUtilisateur,
         connecter,
         deconnecter,
-        inscrire
+        inscrire,
+        authChargee
     }
 })
