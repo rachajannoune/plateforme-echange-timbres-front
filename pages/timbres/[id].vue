@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const route = useRoute()
+const auth = useAuthStore()
+const vientDeCollection = computed(() => {
+    return route.query.origine === 'collection'
+})
 
 const id =
     typeof route.params.id === 'string'
@@ -13,6 +17,18 @@ const {
     error,
     refresh,
 } = useTimbre(id)
+
+const statutProposable = computed(() => {
+    return (data.value?.statut === "DISPONIBLE" || data.value?.statut === "EN_ATTENTE")
+
+})
+const estMonTimbre = computed(() => {
+    if (!auth.utilisateur || !data.value) {
+        return false
+    }
+
+    return auth.utilisateur.id === data.value.proprietaireId
+})
 
 useSeoMeta({
     title: () =>
@@ -31,9 +47,9 @@ useSeoMeta({
         <main class="mx-auto max-w-[1220px] px-5 py-9 sm:py-11">
 
             <!-- Retour au catalogue -->
-            <NuxtLink to="/"
+            <NuxtLink :to="vientDeCollection ? '/collection' : '/'"
                 class="mb-7 inline-flex items-center gap-2 text-sm font-bold text-[#16296B] transition hover:text-[#1A4FB0]">
-                ← Retour au catalogue
+                ← {{ vientDeCollection ? 'Retour à ma collection' : 'Retour au catalogue' }}
             </NuxtLink>
 
             <!-- Chargement -->
@@ -44,30 +60,34 @@ useSeoMeta({
             </div>
 
             <!-- Erreur / timbre introuvable -->
-            <div v-else-if="error" class="rounded-2xl border border-red-200 bg-red-50 px-6 py-14 text-center">
-                <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 font-display text-lg font-extrabold text-red-700">
-                    !
-                </div>
-
-                <h1 class="mt-4 font-display text-xl font-extrabold text-red-800">
-                    Timbre introuvable
+            <div v-else-if="error" role="alert"
+                class="rounded-2xl border border-red-200 bg-red-50 px-6 py-14 text-center">
+                <h1 class="text-xl font-extrabold text-red-800">
+                    {{
+                        error.statusCode === 404
+                            ? 'Timbre introuvable'
+                            : 'Impossible de charger le timbre'
+                    }}
                 </h1>
 
                 <p class="mt-2 text-sm text-red-700">
-                    Ce timbre n'existe pas ou n'est plus accessible.
+                    {{
+                        error.statusCode === 404
+                            ? 'Ce timbre n’existe pas ou n’est plus accessible.'
+                            : 'Une erreur est survenue. Veuillez réessayer.'
+                    }}
                 </p>
 
-                <div class="mt-6 flex justify-center gap-3">
-                    <button type="button"
-                        class="rounded-xl border border-red-200 bg-white px-5 py-2.5 text-sm font-bold text-red-700 transition hover:bg-red-100"
-                        @click="() => refresh()">
+                <div class="mt-6 flex flex-wrap justify-center gap-3">
+                    <button v-if="error.statusCode !== 404" type="button"
+                        class="rounded-xl border border-red-200 bg-white px-5 py-3 text-sm font-bold text-red-700 hover:bg-red-100"
+                        @click="refresh()">
                         Réessayer
                     </button>
 
-                    <NuxtLink to="/"
-                        class="rounded-xl bg-[#16296B] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1A4FB0]">
-                        Retour au catalogue
+                    <NuxtLink :to="vientDeCollection ? '/collection' : '/'"
+                        class="rounded-xl bg-[#16296B] px-5 py-3 text-sm font-bold text-white hover:bg-[#1A4FB0]">
+                        {{ vientDeCollection ? 'Retour à ma collection' : 'Retour au catalogue' }}
                     </NuxtLink>
                 </div>
             </div>
@@ -101,11 +121,23 @@ useSeoMeta({
                         <div class="border-b border-[#EEE9DF] p-6">
                             <div class="flex flex-wrap items-start justify-between gap-4">
                                 <div>
-                                    <span
-                                        class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.1em] text-[#16296B]">
-                                        {{ data.statut.replaceAll('_', ' ') }}
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold" :class="{
+                                        'bg-emerald-50 text-emerald-700': data.statut === 'DISPONIBLE',
+                                        'bg-blue-50 text-blue-700': data.statut === 'EN_ATTENTE',
+                                        'bg-amber-50 text-amber-700': data.statut === 'RESERVE',
+                                        'bg-indigo-50 text-indigo-700': data.statut === 'EN_ECHANGE',
+                                        'bg-red-50 text-red-700': data.statut === 'SUSPENDU'
+                                    }">
+                                        {{
+                                            {
+                                                DISPONIBLE: 'Disponible',
+                                                EN_ATTENTE: 'En attente',
+                                                RESERVE: 'Réservé',
+                                                EN_ECHANGE: 'En échange',
+                                                SUSPENDU: 'Suspendu'
+                                            }[data.statut]
+                                        }}
                                     </span>
-
                                     <h2 class="mt-4 font-display text-2xl font-extrabold text-[#16223D]">
                                         {{ data.titre }}
                                     </h2>
@@ -228,15 +260,15 @@ useSeoMeta({
                         </div>
 
                         <div class="border-t border-[#EEE9DF] p-6">
-                            <button type="button"
+                            <button type="button" v-if="auth.authChargee && !estMonTimbre && statutProposable"
                                 class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FFCD00] px-5 py-3.5 text-sm font-extrabold text-[#16223D] transition hover:bg-[#F4C400]">
                                 ⇆
                                 Proposer un échange
                             </button>
 
-                            <NuxtLink to="/"
+                            <NuxtLink :to="vientDeCollection ? '/collection' : '/'"
                                 class="mt-3 flex w-full items-center justify-center rounded-xl border border-[#DDD7CA] bg-white px-5 py-3 text-sm font-bold text-[#16296B] transition hover:border-[#1A4FB0] hover:bg-blue-50">
-                                Retour au catalogue
+                                {{ vientDeCollection ? 'Retour à ma collection' : 'Retour au catalogue' }}
                             </NuxtLink>
                         </div>
                     </section>
