@@ -26,10 +26,10 @@ export interface ProprietaireTimbre {
     ville: string
 }
 export interface PhotoTimbre {
-    id:string
+    id: string
     face: FaceTimbre
     chemin: string
-    typeMime:string
+    typeMime: string
 }
 
 export interface Timbre {
@@ -57,3 +57,4 @@ export interface Timbre {
     proprietaire: ProprietaireTimbre
     photos: PhotoTimbre[]
 }
+export type TimbreCollection = Omit<Timbre, 'proprietaire'>

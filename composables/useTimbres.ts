@@ -1,7 +1,8 @@
 import type {
     RareteTimbre,
     StatutTimbre,
-    Timbre
+    Timbre,
+    TimbreCollection
 } from '~/types/timbre'
 
 interface ReponseTimbres {
@@ -20,6 +21,20 @@ interface ParametresTimbres {
     statut?: StatutTimbre
     ville?: string
 }
+
+
+interface ReponseMesTimbres {
+    page: number
+    taille: number
+    total: number
+    items: TimbreCollection[]
+}
+interface ParametresMesTimbres {
+    page?: number
+    taille?: number
+    statut?: StatutTimbre
+}
+
 //GET /api/timbres
 
 export function useTimbres(
@@ -28,7 +43,7 @@ export function useTimbres(
     const config = useRuntimeConfig()
 
     const baseURL = config.public.apiBase
-
+    const headers = useRequestHeaders(['cookie'])
     const {
         data,
         status,
@@ -37,7 +52,9 @@ export function useTimbres(
     } = useFetch<ReponseTimbres>(
         `${baseURL}/api/timbres`,
         {
-            query: parametres
+            headers,
+            query: parametres,
+            credentials: 'include'
         }
     )
 
@@ -63,6 +80,37 @@ export function useTimbre(id: string) {
         refresh
     } = useFetch<Timbre>(
         `${baseURL}/api/timbres/${id}`,
+    )
+
+    return {
+        data,
+        status,
+        error,
+        refresh
+    }
+}
+//GET /api/moi/timbres
+
+export function useMesTimbres(
+    parametres: ParametresMesTimbres = {}
+) {
+    const config = useRuntimeConfig()
+
+    const baseURL = config.public.apiBase
+    const headers = useRequestHeaders(['cookie'])
+
+    const {
+        data,
+        status,
+        error,
+        refresh
+    } = useFetch<ReponseMesTimbres>(
+        `${baseURL}/api/moi/timbres`,
+        {
+            headers,
+            query: parametres,
+            credentials: 'include'
+        }
     )
 
     return {
