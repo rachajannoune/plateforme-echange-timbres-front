@@ -28,6 +28,7 @@ export function useAuth() {
             {
                 method: 'POST',
                 body: donnees,
+               //permet d’envoyer le cookie. 
                 credentials: 'include'
             }
         )
