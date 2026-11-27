@@ -4,6 +4,8 @@ import type { FaceTimbre, Timbre } from '~/types/timbre'
 const props = defineProps<{
     timbre: Timbre
 }>()
+const config = useRuntimeConfig()
+const baseURL = config.public.apiBase
 
 const photoRecto = computed(() => {
     return props.timbre.photos.find(
@@ -44,7 +46,7 @@ function selectionnerFace(face: FaceTimbre): void {
         <div
             class="flex min-h-[470px] items-center justify-center overflow-hidden rounded-2xl border border-[#E4DED3] bg-[#F3F1EB] p-8">
             <!-- Une vraie photo existe -->
-            <img v-if="photoAffichee" :src="photoAffichee.chemin"
+            <img v-if="photoAffichee" :src="`${baseURL}${photoAffichee.chemin}`"
                 :alt="`${timbre.titre} - ${faceSelectionnee.toLowerCase()}`"
                 class="max-h-[430px] max-w-full rounded-xl object-contain shadow-sm">
 
@@ -95,10 +97,10 @@ function selectionnerFace(face: FaceTimbre): void {
             <!-- RECTO -->
             <button v-if="photoRecto" type="button"
                 class="group relative h-24 w-24 overflow-hidden rounded-xl border-2 bg-white p-1 transition" :class="faceSelectionnee === 'RECTO'
-                        ? 'border-[#16296B] ring-2 ring-blue-100'
-                        : 'border-[#E4DED3] hover:border-[#1A4FB0]'
+                    ? 'border-[#16296B] ring-2 ring-blue-100'
+                    : 'border-[#E4DED3] hover:border-[#1A4FB0]'
                     " @click="selectionnerFace('RECTO')">
-                <img :src="photoRecto.chemin" :alt="`${timbre.titre} - recto`"
+                <img :src="`${baseURL}${photoRecto.chemin}`" :alt="`${timbre.titre} - recto`"
                     class="h-full w-full rounded-lg object-cover">
 
                 <span
@@ -110,10 +112,10 @@ function selectionnerFace(face: FaceTimbre): void {
             <!-- VERSO -->
             <button v-if="photoVerso" type="button"
                 class="group relative h-24 w-24 overflow-hidden rounded-xl border-2 bg-white p-1 transition" :class="faceSelectionnee === 'VERSO'
-                        ? 'border-[#16296B] ring-2 ring-blue-100'
-                        : 'border-[#E4DED3] hover:border-[#1A4FB0]'
+                    ? 'border-[#16296B] ring-2 ring-blue-100'
+                    : 'border-[#E4DED3] hover:border-[#1A4FB0]'
                     " @click="selectionnerFace('VERSO')">
-                <img :src="photoVerso.chemin" :alt="`${timbre.titre} - verso`"
+                <img :src="`${baseURL}${photoVerso.chemin}`" :alt="`${timbre.titre} - verso`"
                     class="h-full w-full rounded-lg object-cover">
 
                 <span
